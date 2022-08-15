@@ -96,15 +96,39 @@ do
 
     echo ""
     #execute_command $command_str $success_str $behavior_str $timeout_str
-    execute_command $command_str
+    wait_starttime=$(date +%s)
+
+    if [[ -n $timeout_str ]]; then
+        echo "timeout is $timeout_str"
+        timeout="timeout $timeout_str "
+    else
+        timeout=""
+    fi
+
+    execute_command $timeout$command_str
     ret=$?
-    echo "ret_out=$ret"
+    wait_endtime=$(date +%s)
+    TIME_DIFF=$(( $wait_endtime - $wait_starttime ))
+    #echo "ret_out=$ret"
+    hours=$(( $TIME_DIFF / 3600 ))
+    wait_cost_str=" $(( $TIME_DIFF / 3600 )) hours $(( ($TIME_DIFF - $hours*3600) / 60 )) minutes $(( $TIME_DIFF % 60 )) seconds"
+
 
     if [[ $success_str == $ret || ($success_str == "" && $ret == 0) ]]; then
-        echo "$command_str succeeded!"
+        echo "$command_str succeeded! within $wait_cost_str"
+        is_success=true
     else
-        echo "$command_str failed!"
+        echo "$command_str failed! within $wait_cost_str"
+        is_success=false
     fi
+
+    if [[ "$is_success" == false || ($behavior_str == "" && "$is_success" == false) ]]; then
+        echo "$command_str failed! exit 1"
+        exit 1
+    else
+        echo "$command_str succeeded!"
+    fi
+
     echo "=================================================================================="
     echo ""
 

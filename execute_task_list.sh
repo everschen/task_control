@@ -1,11 +1,5 @@
 #!/bin/bash
 
-
-first_sim="10.207.49.5"
-second_sim="10.229.116.43"
-
-
-
 test_file_existed(){
     file=$1
     if test -f "$file"; then
@@ -26,13 +20,6 @@ execute_command(){
     eval $1
     ret=$?
     echo "ret=$ret"
-    # if test -f "$file"; then
-    #     echo "$file exists."
-    #     file_existed=1
-    # else
-    #     echo "$file is not existed."
-    #     file_existed=0
-    # fi
     return $ret
 }
 
@@ -42,18 +29,11 @@ parse_command_line(){
     IFS=','
     read -ra arr <<< "$line"
 
-    #echo "test""$ret"
-
-
     command_str="${arr[0]}"
     success_str="${arr[1]}"
     behavior_str="${arr[2]}"
     timeout_str="${arr[3]}"
-    # echo "command_str:"$command_str
-    # echo "success_str:"$success_str
-    # echo "behavior_str:"$behavior_str
-    # echo "timeout_str:"$timeout_str
-    #echo $command_str $success_str $behavior_str $timeout_str
+
 }
 
 command_str=""
@@ -122,7 +102,9 @@ do
         is_success=false
     fi
 
-    if [[ "$is_success" == false || ($behavior_str == "" && "$is_success" == false) ]]; then
+    if [[ "$behavior_str" == "pass" ]]; then
+        echo "behavior is $behavior_str"
+    elif [[ ($behavior_str == "" && "$is_success" == false) ]]; then
         echo "$command_str failed! exit 1"
         exit 1
     else

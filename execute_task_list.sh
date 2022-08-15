@@ -21,14 +21,19 @@ test_file_existed(){
 execute_command(){
     command=$1
     timeout=$2
-    if test -f "$file"; then
-        echo "$file exists."
-        file_existed=1
-    else
-        echo "$file is not existed."
-        file_existed=0
-    fi
-    return $file_existed
+
+    echo "execute command $1"
+    eval $1
+    ret=$?
+    echo "ret=$ret"
+    # if test -f "$file"; then
+    #     echo "$file exists."
+    #     file_existed=1
+    # else
+    #     echo "$file is not existed."
+    #     file_existed=0
+    # fi
+    return $ret
 }
 
 parse_command_line(){
@@ -84,12 +89,25 @@ do
     #echo "$arr_ret"
     parse_command_line "$update_line"
 
-    echo "after command_str:"$command_str
-    echo "after success_str:"$success_str
-    echo "after behavior_str:"$behavior_str
-    echo "after timeout_str:"$timeout_str
+    echo "command_str:"$command_str
+    echo "success_str:"$success_str
+    echo "behavior_str:"$behavior_str
+    echo "timeout_str:"$timeout_str
+
     echo ""
     #execute_command $command_str $success_str $behavior_str $timeout_str
+    execute_command $command_str
+    ret=$?
+    echo "ret_out=$ret"
+
+    if [[ $success_str == $ret || ($success_str == "" && $ret == 0) ]]; then
+        echo "$command_str succeeded!"
+    else
+        echo "$command_str failed!"
+    fi
+    echo "=================================================================================="
+    echo ""
+
     IFS="$old_ifs"
 
 done < "$1"

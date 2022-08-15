@@ -13,5 +13,5 @@ test11
 ls
 ls -l,
 ls -R,,,3
-ls -i,1,pass,50
+ls -i,0,pass,50
 
